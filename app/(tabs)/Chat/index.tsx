@@ -18,7 +18,6 @@ const ChatBot = () => {
 
   const sendMessage = async () => {
     if (!message.trim()) return; // Avoid sending empty messages
-
     try {
       const response = await fetch('http://127.0.0.1:5000/chat', {
         method: 'POST',
