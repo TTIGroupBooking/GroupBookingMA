@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 
 function NewGroup() {
   const navigation = useNavigation();
-
+console.log("hello")
   // State variables for each form field
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');
