@@ -5,7 +5,8 @@ const StackLayout = ()=> {
         <Stack>
             <Stack.Screen name='index'
             options={{
-                headerTitle: "Teach Classes"
+                headerTitle: "Teach Classes",
+                headerShown: false
             }} />
         </Stack>
     );
