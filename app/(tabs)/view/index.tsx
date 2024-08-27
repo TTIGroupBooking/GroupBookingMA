@@ -73,6 +73,7 @@ function CoursesList() {
       renderItem={renderItem}
       keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.listContainer}
+      
     />
   );
 }

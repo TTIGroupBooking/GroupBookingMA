@@ -71,7 +71,7 @@ function NewGroup() {
       <View style={styles.formContainer}>
         {/* Form fields */}
         <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>NewsGroup</Text>
+          <Text style={styles.headerText}>Register To Teach A Class Now</Text>
         </View>
         <Text style={styles.header}>Group Registration Form</Text>
 
