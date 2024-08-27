@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, Button, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
 // Define a TypeScript interface for the course data
@@ -97,8 +97,13 @@ function CoursesList() {
           <Text style={styles.fieldName}>Status:</Text>
           <Text style={styles.fieldValue}>{item.status}</Text>
         </View>
-        <View style={styles.button}>
-          <Button title = "Book this class" onPress={() => handleBooking(item.group_id, item.user_id)}/>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleBooking(item.group_id, item.user_id)}
+          >
+            <Text style={styles.buttonText}>Book this class</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -175,6 +180,19 @@ const styles = StyleSheet.create({
   },
   button: {
     width:150,
+    paddingVertical: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
     alignItems: 'center',
   }
 });
