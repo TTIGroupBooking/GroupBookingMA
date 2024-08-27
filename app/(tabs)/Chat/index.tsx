@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const ChatBot = () => {
@@ -47,7 +47,7 @@ const ChatBot = () => {
 
   return (
      <KeyboardAwareScrollView>
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
       <ScrollView style={styles.chatContainer} contentContainerStyle={styles.chatContent}>
         {chatHistory.map((chat, index) => (
           <View key={index} style={styles.chatBubble}>
@@ -66,7 +66,7 @@ const ChatBot = () => {
         />
         <Button title="Send" onPress={sendMessage} />
       </View>
-    </View>
+    </SafeAreaView>
     </KeyboardAwareScrollView>
   );
 };
