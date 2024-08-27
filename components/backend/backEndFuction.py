@@ -13,8 +13,7 @@ DB_CONFIG = {
     'port':3306,
     'database': 'groupbooking',
     'user': 'root',
-    'password': 'henry27',
-    'database': 'groupbooking'
+    'password': 'Mysql68!',
 }
 
 # Define some example responses
@@ -47,6 +46,7 @@ def get_db_connection():
 
 @app.route('/add_group', methods=['POST'])
 def add_group():
+    
     data = request.json
     startDate = data.get('startDate')
     properStartDate = datetime.strptime(startDate, '%m-%d-%y').strftime('%y-%m-%d')
@@ -96,7 +96,62 @@ def add_group():
         if connection.is_connected():
             cursor.close()
             connection.close()
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    print('1111')
+    data = request.json
+    print(data)
     
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        cursor = connection.cursor()
+        query = """
+        INSERT INTO `users` (
+            `firstname`, `lastname`, `phone`, `email`, `password`
+        ) VALUES (
+            %s, %s, %s, %s, %s
+        )
+        """
+        values = (
+            data.get('firstName'),
+            data.get('lastName'), 
+            data.get('phone'),
+            data.get('email'), 
+            data.get('password')
+        )
+        cursor.execute(query, values)
+        return jsonify({"message":"Added new user"}),200
+
+    except Error as e:
+        return jsonify({'message': 'Error creating user', 'error': str(e)}), 500
+    
+    
+@app.route('/getCourses', methods=['GET'])    
+def getCourses():
+    query ="select * from `courses`"
+    connection = None
+    cursor = None
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(query)
+        results = cursor.fetchall()
+        
+        return jsonify(results)
+    except Error as e:
+        return jsonify({"message":"Error retrieving groups", 'error':str(e)}), 500
+    
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            try:
+                connection.close()
+            except Error as e:
+                return
 
 @app.route('/test_db_connection', methods=['GET'])
 def test_db_connection():

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios'
 import { useNavigation } from '@react-navigation/native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const RegistrationForm = () => {
     const [formData, setFormData] = useState({
@@ -47,8 +46,7 @@ const RegistrationForm = () => {
     };
 
     return (
-        <KeyboardAwareScrollView>
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Text style={styles.heading}>Register</Text>
             <View style={styles.formGroup}>
                 <Text style={styles.label}>First Name:</Text>
@@ -121,8 +119,7 @@ const RegistrationForm = () => {
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
-        </SafeAreaView>
-        </KeyboardAwareScrollView>
+        </View>
     );
 };
 
