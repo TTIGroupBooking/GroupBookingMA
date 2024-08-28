@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 from flask_cors import CORS
 from datetime import datetime
+import json  
 
 app = Flask(__name__)
 CORS(app)
@@ -127,7 +128,20 @@ def register():
     except Error as e:
         return jsonify({'message': 'Error creating user', 'error': str(e)}), 500
     
+@app.route('/bookClass', methods=['POST'])
+def bookclass():
+    data = request.json
+    groupId = data.get("groupID")
+    userId = data.get("userId")
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        cursor = connection.cursor()
+        cursor.execute(f"insert into userbooked (user_id, group_id) values ({userId}, {groupId})")
+        return jsonify("Booked")
+    except Error as e:
+        return jsonify({"message":"Error updating booking"}),500
     
+        
 @app.route('/getCourses', methods=['GET'])    
 def getCourses():
     query ="select * from `courses`"
@@ -171,6 +185,23 @@ def test_db_connection():
             return jsonify({'message': 'Error executing query.', 'error': str(e)}), 500
     else:
         return jsonify({'message': 'Database connection failed.'}), 500
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    _email = data.get("email")
+    _password = data.get("password")
+    query = f"select user_id from users where upper(email)=upper('{_email}') and upper(password)=upper('{_password}') limit 1" 
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(query)
+    results = cursor.fetchone()
+    value = int(results[0])
+    
+    s = requests.Session() #save in cookies
+    s.post('http://www...',data=payload)
+    print(value)
+    return 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
