@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 
 const LoginForm = () => {
@@ -8,16 +9,14 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
 
-    const users = [
-        { email: 'user@example.com', password: 'password123', firstName: 'John', lastName: 'Doe', phone: '123-456-7890' }
-    ];
-
-    const handleSubmit = () => {
-        const foundUser = users.find(user => user.email === email && user.password === password);
-        if (foundUser) {
-          //  navigation.navigate('UserInfo', { user: foundUser });
-        } else {
-            Alert.alert('Invalid email or password');
+    const handleSubmit = async () => {
+        try {
+            const data = {"email": email, "password": password}
+            console.log(data)
+            const response = await axios.post("http://localhost:5000/login", data)
+        }
+        catch (error) {
+            console.error(error)
         }
     };
 
@@ -47,7 +46,7 @@ const LoginForm = () => {
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('RegistrationForm')}>
+            {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('./RegistrationForm.tsx')}>
                 <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity> */}
         </View>
