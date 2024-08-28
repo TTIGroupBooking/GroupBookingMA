@@ -1,50 +1,82 @@
-# Welcome to your Expo app 👋
+# Welcome to Learnix
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Learnix is an app where you can learn and teach new skills in one place.
 
-## Get started
+## Getting Started
 
-1. Install dependencies
+Follow these steps to set up and run the application on your local machine.
 
-   ```bash
-   npm install
-   ```
+### Prerequisites
 
-2. Start the app
+Ensure you have the following installed:
 
-   ```bash
-    npx expo start
-   ```
+- [Node.js](https://nodejs.org/)
+- [Python](https://www.python.org/)
+- [MySQL](https://www.mysql.com/)
 
-In the output, you'll find options to open the app in a
+### Installation
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. **Install Node.js dependencies:**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+    ```bash
+    npm install
+    ```
 
-## Get a fresh project
+2. **Install Python dependencies:**
 
-When you're ready, run:
+    ```bash
+    pip install flask
+    pip install mysql-connector-python
+    ```
 
-```bash
-npm run reset-project
-```
+### Running the App
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+1. **Start the backend server:**
 
-## Learn more
+    Replace `'path/to/backendFunction/file'` with the actual path to your backend file:
 
-To learn more about developing your project with Expo, look at the following resources:
+    ```bash
+    python 'path/to/backendFunction/file'
+    ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+2. **Start the frontend:**
 
-## Join the community
+    ```bash
+    npm start
+    ```
 
-Join our community of developers creating universal apps.
+### Accessing the App
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+After starting the app, you'll see options to:
+
+- Open the app in a web browser (development build)
+- Scan the QR code to open the app in the Expo Go mobile app (if using Expo)
+
+## Troubleshooting
+
+If you encounter issues, check the following:
+
+- Ensure all dependencies are correctly installed.
+- Verify the backend server is running before starting the frontend.
+- Review error messages in the terminal for hints on what might be wrong.
+
+## Contributing
+
+We welcome contributions! To get started:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Create a Pull Request.
+
+## Contact
+
+For any questions or support, please reach out to [rochelwolff@gmail.com].
+
+## Acknowledgements
+
+- [Flask](https://flask.palletsprojects.com/) for the backend framework.
+- [MySQL Connector](https://dev.mysql.com/doc/connector-python/en/) for MySQL integration.
+- [Expo](https://expo.dev/) for React Native development.
+
