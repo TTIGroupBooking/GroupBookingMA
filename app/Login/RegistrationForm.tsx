@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         padding: 20,
+        marginTop: 150,
     },
     heading: {
         fontSize: 24,

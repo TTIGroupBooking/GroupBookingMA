@@ -1,12 +1,25 @@
-from flask import Flask, request, jsonify
+
+from flask import Flask, request, jsonify, make_response, json
 import mysql.connector
 from mysql.connector import Error
 from flask_cors import CORS
 from datetime import datetime
-import json  
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import os
+
 
 app = Flask(__name__)
 CORS(app)
+cwd = os.getcwd()
+
+with open(f'{cwd}/app/config.json', 'r', encoding='utf-8') as f:
+    jconfig = json.load(f)
+  
+app.config['SECRET_KEY'] = jconfig['secretkey']
+app.config["JWT_SECRET_KEY"] = jconfig['jwtsecretkey']
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+
+jwt = JWTManager(app) 
 
 # Database connection details
 DB_CONFIG = {
@@ -101,7 +114,6 @@ def add_group():
 
 @app.route('/register', methods=['POST'])
 def register():
-    print('1111')
     data = request.json
     print(data)
     
@@ -127,17 +139,32 @@ def register():
 
     except Error as e:
         return jsonify({'message': 'Error creating user', 'error': str(e)}), 500
-    
+ 
+@app.route('/checkCookies', methods=['POST'])
+@jwt_required()
+def checkCookies():
+    current_user = get_jwt_identity()
+    current_user = "5"
+    print(current_user)
+    if not current_user is None:
+        return "0"
+    else: 
+        return f'{current_user}'
+       
 @app.route('/bookClass', methods=['POST'])
 def bookclass():
     data = request.json
+    print(data)
     groupId = data.get("groupID")
-    userId = data.get("userId")
+    print('ddd')
+    #user_id = get_jwt_identity()
+    userId = "5"
+    #userId = data.get("userId")
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
         cursor.execute(f"insert into userbooked (user_id, group_id) values ({userId}, {groupId})")
-        return jsonify("Booked")
+        return "Booked"
     except Error as e:
         return jsonify({"message":"Error updating booking"}),500
     
@@ -156,7 +183,12 @@ def getCourses():
         
         return jsonify(results)
     except Error as e:
-        return jsonify({"message":"Error retrieving groups", 'error':str(e)}), 500
+        filename = r"C:\Users\Nechama Haschel\Documents\courses.txt.json"
+        try:
+            with open(filename,'r') as file:
+                return json.load(file)
+        except: 
+            return jsonify({"message":"Error retrieving groups", 'error':str(e)}), 500
     
     finally:
         if cursor is not None:
@@ -191,17 +223,22 @@ def login():
     data = request.json
     _email = data.get("email")
     _password = data.get("password")
-    query = f"select user_id from users where upper(email)=upper('{_email}') and upper(password)=upper('{_password}') limit 1" 
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    cursor.execute(query)
-    results = cursor.fetchone()
-    value = int(results[0])
-    
-    s = requests.Session() #save in cookies
-    s.post('http://www...',data=payload)
-    print(value)
-    return 
+    try:
+        query = f"select user_id, firstname, lastname from users where upper(email)=upper('{_email}') and upper(password)=upper('{_password}') limit 1" 
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(query)
+        results = cursor.fetchone()
+        
+        if results:
+            user_id = results[0]
+            access_token = create_access_token(identity=user_id)
+            response = make_response(jsonify({'access_token':access_token}))
+            return results[1]+" "+results[2]
+        else:
+            return jsonify({"message":"invalid credentials"}), 401
+    except Error as e:
+            return jsonify({"message:":"error during login", "error": str(e)}),500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

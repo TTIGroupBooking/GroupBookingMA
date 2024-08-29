@@ -1,4 +1,0 @@
-{
-  "secretkey": "your_strong_secret_key",
-  "jwtsecretkey": "your_jwt_secret_key"
-  }

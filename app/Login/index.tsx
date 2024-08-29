@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import axios from 'axios';
+//import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
-
+    console.log("navigation logged here, ", navigation);
+    const router = useRouter();
+    const navigationToTeach = () =>{router.push('./RegistrationForm')}
+    const navigationToHome = () =>{router.push('../Home')}
     const handleSubmit = async () => {
         try {
             const data = {"email": email, "password": password}
-            console.log(data)
             const response = await axios.post("http://localhost:5000/login", data)
+            navigationToHome()
+            
         }
         catch (error) {
             console.error(error)
@@ -46,9 +52,10 @@ const LoginForm = () => {
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('./RegistrationForm.tsx')}>
+            
+            <TouchableOpacity style={styles.button} onPress={navigationToTeach}>
                 <Text style={styles.buttonText}>Register</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
         </View>
     );
 };
