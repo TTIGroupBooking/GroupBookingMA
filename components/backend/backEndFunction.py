@@ -153,17 +153,18 @@ def checkCookies():
        
 @app.route('/bookClass', methods=['POST'])
 def bookclass():
-    print('ddd')
-    user_id = get_jwt_identity()
-    user_id = "5"
     data = request.json
+    print(data)
     groupId = data.get("groupID")
-    userId = data.get("userId")
+    print('ddd')
+    #user_id = get_jwt_identity()
+    userId = "5"
+    #userId = data.get("userId")
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
         cursor.execute(f"insert into userbooked (user_id, group_id) values ({userId}, {groupId})")
-        return jsonify("Booked")
+        return "Booked"
     except Error as e:
         return jsonify({"message":"Error updating booking"}),500
     

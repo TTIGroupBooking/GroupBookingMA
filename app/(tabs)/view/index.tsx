@@ -25,13 +25,14 @@ function CoursesList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [idPass, setIDPass] = useState<{groupID: Number; userID: number}[]>([])
-  const [bookingStatus, setBookingStatus] = useState('Book this cource')
+  const [bookingStatus, setBookingStatus] = useState('Book this Course')
 
   // Fetch courses data from the API
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get('http://localhost:5000/getCourses');
+        console.log(response.data)
         setCourses(response.data);
         setLoading(false);
       } catch (err) {
@@ -49,7 +50,7 @@ function CoursesList() {
         console.log(groupID)
         console.log(userID)
         console.log(idPass)
-        const response = await axios.post("http//localhost:5000/bookClass", idPass)
+        const response = await axios.post("http://localhost:5000/bookClass", idPass)
         setBookingStatus("Booked")
         console.log('hello')
       }
@@ -129,6 +130,12 @@ const ItemSeperator =() =>(
   }
 
   return (
+  <View style={styles.container}>
+    <View style={styles.header}>
+      <Text style={styles.headerText}>Become a Pro!</Text>
+      <Text style={styles.headerText2}>Start Learning Now.</Text>
+    </View>
+  
     <FlatList
       data={courses}
       renderItem={renderItem}
@@ -136,30 +143,62 @@ const ItemSeperator =() =>(
       contentContainerStyle={styles.listContainer}
       ItemSeparatorComponent={ItemSeperator}
     />
+    </View>
   );
 }
 
 // Define styles for the component
 const styles = StyleSheet.create({
+  container: {
+    flex:1,
+    backgroundColor: '#F2F2F2',
+  },
   centered: {
     flex: 1,
     justifyContent: 'center',
   },
+  header: {
+  backgroundColor: '#5F47F2',
+  },
+  headerText:{
+    fontSize:25,
+    fontWeight: 'bold',
+    color: '#D2EA57',
+    paddingTop: 20,
+    paddingLeft:20,
+  },
+  headerText2:{
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    paddingBottom: 20,
+    paddingLeft:20,
+  },
   listContainer: {
     padding: 16,
   },
+  card:{
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius:12,
+    elevation: 3,
+    marginBottom:16,
+    shadowColor: '000',
+    shadowOffset: {width:0, height:2},
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
   itemContainer: {
-    backgroundColor: '#F5F5F5',  // Light gray background
-    padding: 16,
+    backgroundColor: '#FFFFFF',  // Light gray background
+    padding: 20,
     borderRadius: 8,
     marginBottom: 12,
-    elevation: 1,
   },
   itemTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#003366',  // Dark blue text for titles
+    color: '#867BEC',  // Dark blue text for titles
   },
   itemDetails: {
     marginTop: 8,
@@ -171,23 +210,23 @@ const styles = StyleSheet.create({
   },
   fieldName: {
     fontSize: 14,
-    color: 'rgba(0,0,139,0.7)',
+    color: '#555555',
+    fontWeight: 'bold',
     width: 150,  // Adjust width as needed
   },
   fieldValue: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: 'rgba(0, 0, 139, 1)',
+    color: '#555555',
   },
   seperator: {
-    height: 5,
-    backgroundColor: '#4169E1',
+    height: 1,
+    backgroundColor: '#CCCCCC',
     marginVertical: 8,
   },
   button: {
     width:150,
     paddingVertical: 10,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#5F47F2',
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -200,6 +239,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     alignItems: 'center',
+    marginTop: 25,
+    overflow: 'hidden',
   }
 });
 
