@@ -6,16 +6,20 @@ import axios from 'axios';
 const Home = () => {
   const router = useRouter();
   const [userID, setUserID] = useState(null);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     const fetchCookies = async () => {
       try {
         const response = await axios.post("http://localhost:5000/checkCookies");
-        console.log(response.data)
         if (response.data == "0") {
           router.push('../Login');
         } else {
-          setUserID(response.data);
+          console.log(response.data)
+          const data = response.data
+          const Name = data[1]
+          setUserID(data[0])
+          setUserName(Name);
         }
       } catch (error) {
         console.error('Error fetching cookies:', error);
@@ -32,7 +36,7 @@ const Home = () => {
         style={{ width: 350, height: 200 }}
       />
       <Text style={styles.text}>LEARNIX</Text>
-      <Text style={styles.text}>Welcome {userID ? userID : 'Guest'}</Text>
+      <Text style={styles.text}>Welcome {userID ? userName : 'Guest'}</Text>
       <Text>Learn New Skills from Experts Worldwide</Text>
     </SafeAreaView>
   );

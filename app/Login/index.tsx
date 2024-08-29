@@ -3,23 +3,22 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
-//import AsyncStorage from '@react-native-async-storage/async-storage'
-
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [userInfo, setUserInfo] = useState([])
     const navigation = useNavigation();
     console.log("navigation logged here, ", navigation);
     const router = useRouter();
-    const navigationToTeach = () =>{router.push('./RegistrationForm')}
-    const navigationToHome = () =>{router.push('../Home')}
+    const navigationToTeach = () => {router.push('./RegistrationForm')}
+    const navigationToHome = () => {router.push('../Home')};
     const handleSubmit = async () => {
         try {
             const data = {"email": email, "password": password}
             const response = await axios.post("http://localhost:5000/login", data)
+            setUserInfo(response.data)
             navigationToHome()
-            
         }
         catch (error) {
             console.error(error)

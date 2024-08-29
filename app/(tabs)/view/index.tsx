@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import { useRouter } from 'expo-router';
 
 // Define a TypeScript interface for the course data
 interface Course {
@@ -21,18 +22,41 @@ interface Course {
 
 function CoursesList() {
   // State variables for data, loading, and error
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [idPass, setIDPass] = useState<{groupID: Number; userID: number}[]>([])
-  const [bookingStatus, setBookingStatus] = useState('Book this Course')
+  const [bookingStatus, setBookingStatus] = useState<{ [key: number]: string }>({});
+  const [userID, setUserID] = useState(0);
+  const [userName, setUserName] = useState<string>("");
+
+  useEffect(() => {
+    const fetchCookies = async () => {
+      try {
+        const response = await axios.post("http://localhost:5000/checkCookies");
+        if (response.data === "0") {
+          router.push('../Login');
+        } else {
+          console.log(response.data);
+          const data = response.data;
+          const Name = data[1];
+          setUserID(data[0]);
+          setUserName(Name);
+        }
+      } catch (error) {
+        console.error('Error fetching cookies:', error);
+      }
+    };
+
+    fetchCookies();
+  }, [router]);
 
   // Fetch courses data from the API
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get('http://localhost:5000/getCourses');
-        console.log(response.data)
+        console.log(response.data);
         setCourses(response.data);
         setLoading(false);
       } catch (err) {
@@ -44,19 +68,22 @@ function CoursesList() {
     fetchCourses();
   }, []);
 
-  const handleBooking = async (groupID: number, userID: number) => {
-      try {
-        setIDPass(prevState => [...prevState,{groupID, userID}])
-        console.log(groupID)
-        console.log(userID)
-        console.log(idPass)
-        const response = await axios.post("http://localhost:5000/bookClass", idPass)
-        setBookingStatus("Booked")
-        console.log('hello')
-      }
-      catch(error) {
-        Alert.alert("Error", "Failed ot book the class") 
-      }
+  const handleBooking = async (groupID: number) => {
+    console.log(userID)
+    console.log('ddd')
+    if (userID === null) return; // Ensure userID is valid
+   
+    try {
+      // Set booking status for the specific groupID
+      setBookingStatus(prevState => ({
+        ...prevState,
+        [groupID]: "Booked"
+      }));
+      const response = await axios.post("http://localhost:5000/bookClass",  {groupID, userID });
+      console.log('Booking response:', response.data);
+    } catch (error) {
+      Alert.alert("Error", "Failed to book the class");
+    }
   };
 
   // Render a single course item
@@ -106,19 +133,25 @@ function CoursesList() {
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-          style={styles.button}
-          onPress={() => handleBooking(item.group_id, item.user_id)}
+            style={[
+              styles.button,
+              { backgroundColor: bookingStatus[item.group_id] === "Booked" ? '#D4EDDA' : '#5F47F2' }
+            ]}
+            onPress={() => handleBooking(item.group_id)}
           >
-            <Text style={styles.buttonText}>{bookingStatus}</Text>
+            <Text style={styles.buttonText}>
+              {bookingStatus[item.group_id] === "Booked" ? 'Booked' : 'Book this Course'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 
-const ItemSeperator =() =>(
-  <View style={styles.seperator}/>
-)
+  const ItemSeperator = () => (
+    <View style={styles.seperator} />
+  );
+
   // Render the component
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" style={styles.centered} />;
@@ -130,19 +163,19 @@ const ItemSeperator =() =>(
   }
 
   return (
-  <View style={styles.container}>
-    <View style={styles.header}>
-      <Text style={styles.headerText}>Become a Pro!</Text>
-      <Text style={styles.headerText2}>Start Learning Now.</Text>
-    </View>
-  
-    <FlatList
-      data={courses}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.group_id.toString()}  // Ensure the key is unique and valid
-      contentContainerStyle={styles.listContainer}
-      ItemSeparatorComponent={ItemSeperator}
-    />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Become a Pro!</Text>
+        <Text style={styles.headerText2}>Start Learning Now.</Text>
+      </View>
+
+      <FlatList
+        data={courses}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.group_id.toString()}  // Ensure the key is unique and valid
+        contentContainerStyle={styles.listContainer}
+        ItemSeparatorComponent={ItemSeperator}
+      />
     </View>
   );
 }
@@ -150,7 +183,7 @@ const ItemSeperator =() =>(
 // Define styles for the component
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: '#F2F2F2',
   },
   centered: {
@@ -158,38 +191,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-  backgroundColor: '#5F47F2',
+    backgroundColor: '#5F47F2',
   },
-  headerText:{
-    fontSize:25,
+  headerText: {
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#D2EA57',
     paddingTop: 20,
-    paddingLeft:20,
+    paddingLeft: 20,
   },
-  headerText2:{
+  headerText2: {
     fontSize: 17,
     fontWeight: 'bold',
     color: '#FFFFFF',
     paddingBottom: 20,
-    paddingLeft:20,
+    paddingLeft: 20,
   },
   listContainer: {
     padding: 16,
   },
-  card:{
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius:12,
-    elevation: 3,
-    marginBottom:16,
-    shadowColor: '000',
-    shadowOffset: {width:0, height:2},
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
   itemContainer: {
-    backgroundColor: '#FFFFFF',  // Light gray background
+    backgroundColor: '#FFFFFF',
     padding: 20,
     borderRadius: 8,
     marginBottom: 12,
@@ -198,7 +220,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#867BEC',  // Dark blue text for titles
+    color: '#867BEC',
   },
   itemDetails: {
     marginTop: 8,
@@ -212,7 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555555',
     fontWeight: 'bold',
-    width: 150,  // Adjust width as needed
+    width: 150,
   },
   fieldValue: {
     fontSize: 14,
@@ -224,9 +246,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   button: {
-    width:150,
+    width: 150,
     paddingVertical: 10,
-    backgroundColor: '#5F47F2',
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
