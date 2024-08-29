@@ -103,9 +103,13 @@ def get_db_connection():
 def add_group():
     
     data = request.json
-    startDate = data.get('startDate')
-    properStartDate = datetime.strptime(startDate, '%m-%d-%y').strftime('%y-%m-%d')
-    #properStartDate = datetime.strptime(data.get("starDate", '%d/%m/%y'))
+    try:
+        start_date_str = data.get('startDate', '')
+        # Adjust date format parsing if necessary
+        proper_start_date = datetime.strptime(start_date_str, '%m-%d-%y').strftime('%Y-%m-%d')
+    except ValueError as e:
+        return jsonify({'message': 'Invalid date format', 'error': str(e)}), 400
+
     print(data)
     query = """
     INSERT INTO `courses` (
@@ -116,14 +120,13 @@ def add_group():
         %s, %s, %s, %s, %s, %s
     )
     """
-        # Connect to the database
+
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
-        
         values = (
             data.get('name'),
-            properStartDate,
+            proper_start_date,
             int(data.get('weeks')),
             int(data.get('timesPerWeek')),
             int(data.get('maxParticipants')),
@@ -134,7 +137,6 @@ def add_group():
             data.get('status'),
             float(data.get('price'))
         )
-       
         print("1")
         # Execute the query
         cursor.execute(query, values)
@@ -157,7 +159,7 @@ def add_group():
 def register():
     data = request.json
     print(data)
-    
+   
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
@@ -170,17 +172,23 @@ def register():
         """
         values = (
             data.get('firstName'),
-            data.get('lastName'), 
+            data.get('lastName'),
             data.get('phone'),
-            data.get('email'), 
+            data.get('email'),
             data.get('password')
         )
         cursor.execute(query, values)
-        return jsonify({"message":"Added new user"}),200
+        connection.commit()
+        return jsonify({"message": "Added new user"}), 200
 
     except Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error creating user', 'error': str(e)}), 500
- 
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
 @app.route('/checkCookies', methods=['POST'])
 def checkCookies():
     try:
@@ -273,11 +281,11 @@ def login():
     _password = data.get("password")
     try:
         query = f"select user_id, firstname, lastname from users where upper(email)=upper('{_email}') and upper(password)=upper('{_password}') limit 1" 
+        print(query)
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute(query)
         results = cursor.fetchone()
-        response = make_response("Multiple cookies are set")
         if results:
             with open(r"C:\TTI\Mr. Harp\data.txt","w") as file:
                 file.write(str(results[0])+","+results[1]+" "+results[2])

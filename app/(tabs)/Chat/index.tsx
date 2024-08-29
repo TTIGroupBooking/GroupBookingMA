@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { View, TextInput, Button, Text, StyleSheet, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const ChatBot = () => {
   type ChatEntry = {
@@ -45,75 +45,87 @@ const ChatBot = () => {
   };
 
   return (
-     <KeyboardAwareScrollView>
-        <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.chatContainer} contentContainerStyle={styles.chatContent}>
-        {chatHistory.map((chat, index) => (
-          <View key={index} style={styles.chatBubble}>
-            {chat.user ? <Text>User: {chat.user}</Text> : null}
-            {chat.bot ? <Text>Bot: {chat.bot}</Text> : null}
-          </View>
-        ))}
-      </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.chatContent}
+        enableOnAndroid={true}
+        extraHeight={Platform.OS === 'ios' ? 90 : 110} // Adjust for keyboard
+      >
+        <ScrollView style={styles.chatContainer}>
+          {chatHistory.map((chat, index) => (
+            <View key={index} style={styles.chatBubble}>
+              {chat.user ? <Text style={styles.userText}>User: {chat.user}</Text> : null}
+              {chat.bot ? <Text style={styles.botText}>Bot: {chat.bot}</Text> : null}
+            </View>
+          ))}
+        </ScrollView>
+      </KeyboardAwareScrollView>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           value={message}
           onChangeText={setMessage}
           placeholder="Type your message"
-          onSubmitEditing={handleSubmitEditing} // Handle Enter key press
+          onSubmitEditing={handleSubmitEditing}
+          placeholderTextColor="#888"
         />
-        <Button title="Send" onPress={sendMessage} />
+        <Button title="Send" onPress={sendMessage} color="#5F47F2" />
       </View>
     </SafeAreaView>
-    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    backgroundColor: '#f3f3f3',
   },
   chatContainer: {
     flex: 1,
-    padding: 10,
+    padding: 20,
   },
   chatContent: {
     flexGrow: 1,
     justifyContent: 'flex-end',
   },
   chatBubble: {
-    marginBottom: 10,
+    marginBottom: 15,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  userText: {
+    color: '#333333',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  botText: {
+    color: '#5F47F2',
+    fontSize: 16,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    padding: 15,
+    borderTopColor: '#ccc',
+    borderTopWidth: 1,
+    backgroundColor: '#fff',
+    justifyContent: 'space-between',
   },
   input: {
     borderColor: '#ccc',
     borderWidth: 1,
     padding: 10,
     flex: 1,
-    borderRadius: 5,
+    borderRadius: 25,
+    backgroundColor: '#fff',
+    marginRight: 10,
   },
 });
 
 export default ChatBot;
-
-
-
-
-// import {View, Text} from 'react-native'
-// import React from 'react'
-
-// const profile = () => {
-//     return(
-//         <View>
-//             <Text>Chat</Text>
-//         </View>
-//     );
-// };
-
-// export default profile

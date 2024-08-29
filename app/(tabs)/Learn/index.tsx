@@ -135,7 +135,7 @@ function CoursesList() {
           <TouchableOpacity
             style={[
               styles.button,
-              { backgroundColor: bookingStatus[item.group_id] === "Booked" ? '#D4EDDA' : '#5F47F2' }
+              { backgroundColor: bookingStatus[item.group_id] === "Booked" ? 'green' : '#5F47F2' }
             ]}
             onPress={() => handleBooking(item.group_id)}
           >

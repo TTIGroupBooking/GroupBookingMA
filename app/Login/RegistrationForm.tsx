@@ -126,46 +126,55 @@ const RegistrationForm = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#5F47F2',
         justifyContent: 'center',
-        padding: 20,
-        marginTop: 150,
+        padding: 24,
     },
     heading: {
-        fontSize: 24,
-        marginBottom: 20,
+        fontSize: 25,
+        color: '#FFFFFF',
+        fontFamily: 'Proxima Nova',
         textAlign: 'center',
+        marginBottom: 24,
     },
     formGroup: {
         marginBottom: 15,
     },
     label: {
         fontSize: 16,
+        color: '#FFFFFF',
         marginBottom: 5,
+        fontFamily: 'Noto Sans',
     },
     input: {
         height: 40,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 4,
-        paddingHorizontal: 10,
+        fontSize: 13,
+        color: '#333333',
+        borderRadius: 15,
+        padding: 15,
+        paddingHorizontal: 15,
+        backgroundColor: '#FFFFFF',
     },
     passwordContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     toggleText: {
-        color: '#007bff',
+        color: '#D2EA57',
         marginLeft: 10,
     },
     button: {
-        backgroundColor: '#007bff',
-        padding: 10,
-        borderRadius: 4,
+        backgroundColor: '#D2EA57',
+        padding: 15,
+        borderRadius: 30,
         alignItems: 'center',
+        marginVertical: 10,
     },
     buttonText: {
-        color: '#fff',
+        color: '#333333',
+        fontWeight: 'bold',
         fontSize: 16,
+        fontFamily: 'Proxima Nova',
     },
 });
 
