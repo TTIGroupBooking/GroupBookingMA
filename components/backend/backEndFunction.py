@@ -3,6 +3,7 @@ import mysql.connector
 from mysql.connector import Error
 from flask_cors import CORS
 from datetime import datetime
+import json 
 
 app = Flask(__name__)
 CORS(app)
@@ -10,10 +11,9 @@ CORS(app)
 # Database connection details
 DB_CONFIG = {
     'host': '127.0.0.1',
-    'port':3306,
-    'database': 'groupbooking',
+    'port':8081,
+    'database': 'groupbookingkkk',
     'user': 'root',
-    'password': 'Mysql68!',
 }
 
 # Define some example responses
@@ -127,7 +127,20 @@ def register():
     except Error as e:
         return jsonify({'message': 'Error creating user', 'error': str(e)}), 500
     
+@app.route('/bookClass', methods=['POST'])
+def bookclass():
+    data = request.json
+    groupId = data.get("groupID")
+    userId = data.get("userId")
+    try:
+        connection = mysql.connector.connect(**DB_CONFIG)
+        cursor = connection.cursor()
+        cursor.execute(f"insert into userbooked (user_id, group_id) values ({userId}, {groupId})")
+        return jsonify("Booked")
+    except Error as e:
+        return jsonify({"message":"Error updating booking"}),500
     
+        
 @app.route('/getCourses', methods=['GET'])    
 def getCourses():
     query ="select * from `courses`"
@@ -142,7 +155,12 @@ def getCourses():
         
         return jsonify(results)
     except Error as e:
-        return jsonify({"message":"Error retrieving groups", 'error':str(e)}), 500
+        filename = r"C:\Users\studioinknyc\Dropbox\Shevy\My_Courses\TTI\courses.txt.json"
+        try:
+            with open(filename,'r') as file:
+                return json.load(file)
+        except: 
+            return jsonify({"message":"Error retrieving groups", 'error':str(e)}), 500
     
     finally:
         if cursor is not None:
@@ -171,6 +189,24 @@ def test_db_connection():
             return jsonify({'message': 'Error executing query.', 'error': str(e)}), 500
     else:
         return jsonify({'message': 'Database connection failed.'}), 500
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    _email = data.get("email")
+    _password = data.get("password")
+    try:
+        query = f"select user_id from users where upper(email)=upper('{_email}') and upper(password)=upper('{_password}') limit 1" 
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute(query)
+        results = cursor.fetchone()
+        value = results[0]
+        resp = make_response("Cookie Set")
+        resp.set_cookies("UserID", value)
+        return 0
+    except:
+        return 1
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
