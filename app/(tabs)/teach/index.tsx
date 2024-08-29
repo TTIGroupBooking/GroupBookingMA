@@ -4,9 +4,27 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 function NewGroup() {
   const navigation = useNavigation();
+  const router = useRouter();
+  //const navigationToTeach = () =>{router.push('../../../Login/index.tsx')};
+  
+
+  const getCookies = async () => {
+    const response = await axios.post("http://localhost:5000/checkCookies");
+      if (response.data =="0") {
+        console.log('go to login')
+       // navigationToTeach()
+      } 
+      else {
+        return response.data;
+      }
+  }
+  
+  const userID = getCookies();
+
   // State variables for each form field
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -21,6 +39,7 @@ function NewGroup() {
   const [status, setStatus] = useState('Not Active Yet');
 
   const handleSubmit = async () => {
+    
     const formData = {
       name,
       startDate,

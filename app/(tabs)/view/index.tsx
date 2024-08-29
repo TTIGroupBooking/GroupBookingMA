@@ -25,7 +25,7 @@ function CoursesList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [idPass, setIDPass] = useState<{groupID: Number; userID: number}[]>([])
-  const [booked, setBooked] = useState('')
+  const [bookingStatus, setBookingStatus] = useState('Book this cource')
 
   // Fetch courses data from the API
   useEffect(() => {
@@ -50,7 +50,8 @@ function CoursesList() {
         console.log(userID)
         console.log(idPass)
         const response = await axios.post("http//localhost:5000/bookClass", idPass)
-        setBooked(response.data)
+        setBookingStatus("Booked")
+        console.log('hello')
       }
       catch(error) {
         Alert.alert("Error", "Failed ot book the class") 
@@ -107,8 +108,7 @@ function CoursesList() {
           style={styles.button}
           onPress={() => handleBooking(item.group_id, item.user_id)}
           >
-            <Text style={styles.buttonText}>Book this class</Text>
-            <Text>{booked}</Text>
+            <Text style={styles.buttonText}>{bookingStatus}</Text>
           </TouchableOpacity>
         </View>
       </View>
