@@ -11,7 +11,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 function NewGroup() {
   const navigation = useNavigation();
 
-  // State variables for each form field
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [weeks, setWeeks] = useState('');
