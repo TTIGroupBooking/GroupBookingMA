@@ -1,6 +1,8 @@
 import {View, Text} from 'react-native'
 import React from 'react'
 import axios from 'axios'
+import {useRouter} from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const profile = () => {
     const getCookies = async () => {

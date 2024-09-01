@@ -101,32 +101,34 @@ def get_db_connection():
 
 @app.route('/add_group', methods=['POST'])
 def add_group():
-    
     data = request.json
+
+    startdate = data.get('startDate', '')
+    _date = startdate.replace("/","-") 
     try:
-        start_date_str = data.get('startDate', '')
-        # Adjust date format parsing if necessary
-        proper_start_date = datetime.strptime(start_date_str, '%m-%d-%y').strftime('%Y-%m-%d')
+        _date = datetime.strptime(_date, "%m-%d-%y")
+        _date = _date.strftime("%y-%m-%d")
     except ValueError as e:
         return jsonify({'message': 'Invalid date format', 'error': str(e)}), 400
 
-    print(data)
     query = """
-    INSERT INTO `courses` (
+    INSERT INTO `courses` (`user_id`,
         `course_name`, `start_date`, `weeks`, `times_per_week`, `max_participants`,
         `min_participants`, `description`, `preferred_day`, `preferred_time`, `status`, `price`
     ) VALUES (
-        %s, %s, %s, %s, %s,
+        %s, %s, %s, %s, %s, %s,
         %s, %s, %s, %s, %s, %s
     )
     """
-
+    
     try:
+        print(int(data.get('userID')))
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
         values = (
+            int(data.get('userID')),
             data.get('name'),
-            proper_start_date,
+            _date,
             int(data.get('weeks')),
             int(data.get('timesPerWeek')),
             int(data.get('maxParticipants')),

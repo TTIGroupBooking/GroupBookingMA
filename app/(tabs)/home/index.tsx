@@ -8,28 +8,6 @@ const Home = () => {
   const router = useRouter();
   const [userID, setUserID] = useState('');
   const [userName, setUserName] = useState("");
-  console.log('i am home')
-  
-  // useEffect(() => {
-  //   const fetchCookies = async () => {
-  //     try {
-  //       const response = await axios.post("http://localhost:5000/checkCookies");
-  //       if (response.data == "0") {
-  //         router.push('../Login');
-  //       } else {
-  //         console.log(response.data)
-  //         const data = response.data
-  //         const Name = data[1]
-  //         setUserID(data[0])
-  //         setUserName(Name);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching cookies:', error);
-  //     }
-  //   };
-
-  //   fetchCookies();
-  // }, [router]);
 useEffect(() => {
   const getCookies = async () => {
     try {

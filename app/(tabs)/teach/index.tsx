@@ -1,10 +1,11 @@
 import { Alert, View, Text, TextInput, Button, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
-import { useNavigation } from '@react-navigation/native';
-
+import { useNavigation, useTheme } from '@react-navigation/native';
+import {useRouter} from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 function NewGroup() {
@@ -22,6 +23,28 @@ function NewGroup() {
   const [preferredTime, setPreferredTime] = useState('');
   const [price, setPrice] = useState('');
   const [status, setStatus] = useState('Not Active Yet');
+  const router = useRouter();
+
+  const [userID, setUserID] = useState('');
+  const [userName, setUserName] = useState("");
+  useEffect(() => {
+    const getCookies = async () => {
+      try {
+      const id = await AsyncStorage.getItem("@userId");
+      const name = await AsyncStorage.getItem("@userName");
+      if (id && name) {
+        setUserID(id);
+        setUserName(name);
+      }
+      else {
+          router.push('../Login');
+      }
+    } catch (error) {
+      console.error("Error retrieving cookies", error)
+    }
+    };  
+    getCookies()
+  }, [router] );
 
   const handleSubmit = async () => {
     const formData = {
@@ -35,7 +58,8 @@ function NewGroup() {
       preferredDay,
       preferredTime,
       status,
-      price
+      price,
+      userID, userName
     };
 
     try {
@@ -48,6 +72,7 @@ function NewGroup() {
         "Group created successfully",
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
+      router.push("../Profile")
     } catch (error) {
       console.error("Error submitting form:", error);
       Alert.alert(
