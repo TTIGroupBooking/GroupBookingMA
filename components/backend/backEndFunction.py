@@ -1,4 +1,4 @@
-
+from datetime import date
 from flask import Flask, request, jsonify, make_response, json
 import mysql.connector
 from mysql.connector import Error
@@ -35,8 +35,49 @@ responses = {
     "hello": "Hi there! How can I help you with our courses?",
     "course": "We offer a variety of courses. What subject are you interested in?",
     "book": "To book a course, please browse our menu and select the one you'd like.",
-    "default": "I'm not sure how to respond to that. Can you please rephrase or ask about our courses?"
+    "default": "I'm not sure how to respond to that. Can you please rephrase or ask about our courses?",
+"app":"Our app allows users to create and list courses they’re offering and enables participants to browse, book, and attend these classes. It’s a platform to connect instructors with learners.",
+"create":"You can create an account by clicking the 'Sign Up' button on our homepage and following the prompts to enter your information. You can sign up with an email address or use a social media account.",
+"fee":"Creating an account and browsing courses are free. However, there may be fees associated with booking classes or listing courses, depending on the course and payment plan.",
+"reset":"Click on the 'Forgot Password' link on the login page. Follow the instructions to reset your password via the email you registered with.",
+"mobile":"Yes, our app is available on both iOS and Android devices. You can download it from the App Store or Google Play Store.",
+"price":"When creating or editing your course, you’ll find an option to set the price in the course settings. Enter your desired amount and save your changes.",
+"course details":"Yes, you can edit your course details anytime by going to the 'Instructor Dashboard' and selecting the course you wish to modify.",
+"course participants":"You can view your participants in the 'Instructor Dashboard' under the 'Manage Courses' section. There you’ll find a list of attendees for each course.",
+"cancel":"To cancel a course, go to the 'Instructor Dashboard,' select the course you want to cancel, and choose the 'Cancel Course' option. Participants will be notified, and refunds will be processed if applicable.",
+"book":"Browse available courses, select the one you’re interested in, and click on the 'Book Now' button. Follow the prompts to complete your booking and payment.",
+"cancel my booking":"Yes, you can cancel your booking by going to 'My Bookings' in your account. Cancellation policies vary by course, so please review the specific course’s cancellation terms.",
+"course materials":"Course materials are typically available in the 'My Courses' section of your account. You’ll find resources, recordings, and other materials provided by the instructor.",
+"feedback":"Yes, after completing a course, you’ll have the opportunity to leave feedback and a rating. This helps other users make informed decisions and helps instructors improve their courses.",
+"trouble with booking":"If you’re having trouble, please check your internet connection and ensure you’re using the latest version of the app. If the problem persists, contact our support team for assistance.",
+"payment methods":"We accept major credit and debit cards, as well as payment methods like PayPal. Check the payment options available at checkout.",
+"refund":"Refund requests can be made through the 'My Bookings' section. Select the booking you wish to cancel and follow the instructions to request a refund.",
+"process a refund":"Refunds are typically processed within 5-7 business days. The exact time may vary depending on your payment method and bank.",
+"charged if don't attend class":"If you don’t attend a class, you may still be charged, depending on the course’s cancellation policy. Please review the course details for specific terms.",
+"discount":"Discounts for multiple bookings are not standard but may be offered by individual instructors. Check the course description or contact the instructor for any available discounts.",
+"app isn’t working":"Try restarting the app or your device. Ensure you have the latest version of the app installed. If the problem persists, contact our support team for help.",
+"trouble with my payment.":"Check that your payment information is correct and try again. If the issue continues, contact your bank or payment provider. You can also reach out to our support team for assistance.",
+"can’t find":"Ensure you’re logged into the correct account and check the 'My Courses' section. If you still can’t find it, contact our support team for help.",
+"account locked":"Your account may be locked due to multiple failed login attempts or suspicious activity. Follow the instructions sent to your email to unlock your account, or contact our support team for assistance.",
+"update information":"You can update your personal information by going to your account settings and editing your details. Save the changes to update your profile.",
+"information safe":"Yes, we prioritize your privacy and use secure encryption methods to protect your personal information. For more details, please review our Privacy Policy.",
+"change email":"To change your email address, go to your account settings and update your email details. You may need to verify the new email address.",
+"other users information":"Other users can only see the information you choose to share publicly, such as your instructor profile or course listings. Your personal contact details are kept private.",
+"data breaches":"In the event of a data breach, we promptly notify affected users and take necessary actions to secure data and prevent further issues. We also investigate the breach to enhance our security measures.",
+"unauthorized activity":"Immediately contact our support team and provide details of the suspicious activity. We will investigate and take steps to secure your account.",
+"specific category":"Use the search feature or browse through categories on the homepage. You can filter courses by type, location, or other criteria to find what you’re looking for.",
+"course from location":"",
+"course doesn’t meet":"If a course doesn’t meet your expectations, provide feedback to the instructor and contact our support team if you need assistance with refunds or other issues.",
+"multiple languages":"Course availability in multiple languages depends on the instructors. Check the course description for language options or contact the instructor directly.",
+"new courses added":"New courses are added regularly. Check the 'New Courses' section or sign up for our newsletter to stay updated on the latest offerings.",
+"promote course":"You can promote your course by sharing it on social media, using our promotional tools, and engaging with potential students through the app.",
+"tools for instructors":"Instructors have access to tools for course creation, participant management, scheduling, and communication with students through the 'Instructor Dashboard.'",
+"free trial":"Yes, you can offer a free trial or sample by setting up a free session or providing sample materials. Set this up when creating or editing your course.",
+"disputes":"Address disputes directly with participants through the app’s messaging system. If you need further assistance, contact our support team for mediation.",
+"collaborate":"Yes, you can collaborate with other instructors by co-creating courses or offering joint sessions. Coordinate with your collaborators to set up the details.",
+"feedback about the app":"You can provide feedback by sending us an email!"
 }
+
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -62,9 +103,13 @@ def get_db_connection():
 def add_group():
     
     data = request.json
-    startDate = data.get('startDate')
-    properStartDate = datetime.strptime(startDate, '%m-%d-%y').strftime('%y-%m-%d')
-    #properStartDate = datetime.strptime(data.get("starDate", '%d/%m/%y'))
+    try:
+        start_date_str = data.get('startDate', '')
+        # Adjust date format parsing if necessary
+        proper_start_date = datetime.strptime(start_date_str, '%m-%d-%y').strftime('%Y-%m-%d')
+    except ValueError as e:
+        return jsonify({'message': 'Invalid date format', 'error': str(e)}), 400
+
     print(data)
     query = """
     INSERT INTO `courses` (
@@ -75,14 +120,13 @@ def add_group():
         %s, %s, %s, %s, %s, %s
     )
     """
-        # Connect to the database
+
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
-        
         values = (
             data.get('name'),
-            properStartDate,
+            proper_start_date,
             int(data.get('weeks')),
             int(data.get('timesPerWeek')),
             int(data.get('maxParticipants')),
@@ -93,7 +137,6 @@ def add_group():
             data.get('status'),
             float(data.get('price'))
         )
-       
         print("1")
         # Execute the query
         cursor.execute(query, values)
@@ -116,7 +159,7 @@ def add_group():
 def register():
     data = request.json
     print(data)
-    
+   
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
@@ -129,44 +172,59 @@ def register():
         """
         values = (
             data.get('firstName'),
-            data.get('lastName'), 
+            data.get('lastName'),
             data.get('phone'),
-            data.get('email'), 
+            data.get('email'),
             data.get('password')
         )
         cursor.execute(query, values)
-        return jsonify({"message":"Added new user"}),200
+        connection.commit()
+        return jsonify({"message": "Added new user"}), 200
 
     except Error as e:
+        print(f"Error: {e}")
         return jsonify({'message': 'Error creating user', 'error': str(e)}), 500
- 
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+
 @app.route('/checkCookies', methods=['POST'])
-@jwt_required()
 def checkCookies():
-    current_user = get_jwt_identity()
-    current_user = "5"
-    print(current_user)
-    if not current_user is None:
-        return "0"
-    else: 
-        return f'{current_user}'
-       
+    try:
+        filename = r"C:\TTI\Mr. Harp\data.txt"
+        with open(filename,"r") as file:
+            content = file.read()
+            content = content.split(',')
+            print(content)
+            return content
+    except:
+        return 0
+               
 @app.route('/bookClass', methods=['POST'])
-def bookclass():
-    data = request.json
-    print(data)
-    groupId = data.get("groupID")
-    print('ddd')
-    #user_id = get_jwt_identity()
-    userId = "5"
-    #userId = data.get("userId")
+def book_class():
+    data = request.get_json()
+    groupID = data.get('groupID')
+    userID = int(data.get('userID'))
+
+    if not isinstance(groupID, int) or not isinstance(userID, int):
+        return jsonify({"message": "Invalid input"}), 400
+
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
-        cursor.execute(f"insert into userbooked (user_id, group_id) values ({userId}, {groupId})")
-        return "Booked"
+        datetoday = datetime.now().date()
+        statement = "INSERT INTO userbooked (user_id, group_id, date) VALUES (%s, %s, %s)"
+        cursor.execute(statement, (userID, groupID, datetoday))
+        connection.commit()
+        
+        return jsonify({"message": "Booked successfully"}), 200
     except Error as e:
-        return jsonify({"message":"Error updating booking"}),500
+        return jsonify({"message": "Error updating booking", "error": str(e)}), 500
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
     
         
 @app.route('/getCourses', methods=['GET'])    
@@ -223,22 +281,28 @@ def login():
     data = request.json
     _email = data.get("email")
     _password = data.get("password")
+    print(_email)
+    print(_password)
     try:
         query = f"select user_id, firstname, lastname from users where upper(email)=upper('{_email}') and upper(password)=upper('{_password}') limit 1" 
+        print(query)
         connection = get_db_connection()
         cursor = connection.cursor()
         cursor.execute(query)
         results = cursor.fetchone()
-        
+        print('22')
+        print(results)
+        print('33')
         if results:
-            user_id = results[0]
-            access_token = create_access_token(identity=user_id)
-            response = make_response(jsonify({'access_token':access_token}))
-            return results[1]+" "+results[2]
+            print('found')
+            print(results)
+            return jsonify(results)
         else:
+            print('return 0')
+            return "0"
             return jsonify({"message":"invalid credentials"}), 401
     except Error as e:
-            return jsonify({"message:":"error during login", "error": str(e)}),500
+            return "0"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

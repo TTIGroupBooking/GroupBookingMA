@@ -3,23 +3,37 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
-//import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Cookies } from '@react-native-cookies/cookies'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [userFound, setUserFound] = useState(true)
     const navigation = useNavigation();
-    console.log("navigation logged here, ", navigation);
     const router = useRouter();
     const navigationToTeach = () =>{router.push('./RegistrationForm')}
     const navigationToHome = () =>{router.push('../Home')}
     const handleSubmit = async () => {
+        console.log('here')
         try {
             const data = {"email": email, "password": password}
             const response = await axios.post("http://localhost:5000/login", data)
+            console.log('1')
+            if (response.data===0){
+                setUserFound(false);
+                console.log('2')
+            }
+            else {
+                console.log('43')
+            console.log(response.data)
+            console.log('wow')
+            AsyncStorage.setItem("@userId", response.data[0])
+            AsyncStorage.setItem("@userName", response.data[1])
+            console.log('wee')
             navigationToHome()
-            
+            }
         }
         catch (error) {
             console.error(error)
@@ -56,6 +70,10 @@ const LoginForm = () => {
             <TouchableOpacity style={styles.button} onPress={navigationToTeach}>
                 <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
+            <View>
+                {!userFound && <Text>Incorrect user name or password</Text>}
+            </View>
+            <Text></Text>
         </View>
     );
 };
