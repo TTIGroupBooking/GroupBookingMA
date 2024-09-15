@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
-import {useRouter} from 'expo-router'
+import { useNavigation } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define a TypeScript interface for the course data
@@ -31,6 +31,7 @@ function CoursesList() {
   const [bookingStatus, setBookingStatus] = useState<{ [key: number]: string }>({});
   const [userID, setUserID] = useState(0);
   const [userName, setUserName] = useState<string>("");
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchCookies = async () => {
